@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
-public class Shop {
+public class Shop implements Callable<Double> {
 
     private String shopName;
 
@@ -23,9 +24,11 @@ public class Shop {
         }
     }
 
-    public double totalPriceSoldGoods() {
-        return soldGoods.stream()
+    public Double call() {
+        double total = soldGoods.stream()
                 .mapToDouble(Double::doubleValue)
                 .sum();
+        System.out.printf("Магазин '%s' заработал - %s $\n", this.getShopName(), total);
+        return total;
     }
 }
