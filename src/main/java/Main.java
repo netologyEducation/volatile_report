@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.DoubleAdder;
 
@@ -12,19 +11,18 @@ public class Main {
 
         DoubleAdder total = new DoubleAdder();
 
-        shopList.add(new Shop("number one"));
-        shopList.add(new Shop("number two"));
-        shopList.add(new Shop("number three"));
+        for (int i = 1; i <= 1000; i++) {
+            shopList.add(new Shop("Shop - #" + i));
+        }
 
-        ExecutorService executor = Executors.newFixedThreadPool(3);
-        List<Future<Double>> futures = executor.invokeAll(shopList);
-
-        for (Future<Double> future : futures) {
-            total.add(future.get());
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        for (Shop shop : shopList) {
+            executor.submit(() ->
+                    total.add(shop.totalAmount()));
         }
 
         executor.shutdown();
-        System.out.printf("Итоговый заработок за день - %s $", total);
-//    }
+        executor.awaitTermination(60, TimeUnit.SECONDS);
+        System.out.printf("\nИтоговый заработок за день - %s $\n", total.sum());
     }
 }
